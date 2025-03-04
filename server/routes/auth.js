@@ -5,6 +5,15 @@ const bcrypt = require('bcryptjs');
 const { check, validationResult } = require('express-validator');
 const User = require('../models/User');
 
+
+router.post('/register', async (req, res) => {
+    const { email, password, role } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = new User({ email, password: hashedPassword, role });
+    await user.save();
+    res.status(201).json({ message: 'Пользователь создан' });
+  });
+
 // POST /api/auth/login
 router.post(
   '/login',
@@ -13,6 +22,7 @@ router.post(
     check('password', 'Пароль обязателен').exists(),
   ],
   async (req, res) => {
+    console.log('Login attempt:', req.body);
     // Проверка валидации
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

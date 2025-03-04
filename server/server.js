@@ -18,6 +18,10 @@ mongoose.connect(process.env.MONGO_URI)
 const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
 
+const regRoutes = require('./routes/auth');
+app.use('/api/register', regRoutes)
+
+
 // Тестовый роут
 app.get('/', (req, res) => {
   res.send('Сервер работает!');
