@@ -24,6 +24,9 @@ app.use('/api/register', regRoutes)
 const materialRoutes = require('./routes/materialRoutes')
 app.use('/api/materials', materialRoutes)
 
+const historyRoutes = require('./routes/historyRoutes');
+app.use('/api/history', historyRoutes);
+
 
 // Тестовый роут
 app.get('/', (req, res) => {
