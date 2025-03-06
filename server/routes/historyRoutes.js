@@ -5,7 +5,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 const roleMiddleware = require('../middleware/roleMiddleware');
 const History = require('../models/History');
 
-router.get('/history', authMiddleware, async (req, res) => {
+router.get('/', authMiddleware, async (req, res) => {
   try {
     const history = await History.find().populate('userId', 'email role'); // Добавляем информацию о пользователе
     res.json(history);

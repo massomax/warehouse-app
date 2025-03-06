@@ -4,6 +4,7 @@ const Material = require('../models/Material');
 const authMiddleware = require('../middleware/authMiddleware');
 const roleMiddleware = require('../middleware/roleMiddleware');
 const History = require('../models/History');
+const Notification = require('../models/Notification');
 
 // Получить все материалы (доступно всем авторизованным пользователям)
 router.get('/', authMiddleware, async (req, res) => {
@@ -48,25 +49,33 @@ router.put('/:id', authMiddleware, roleMiddleware('manager'), async (req, res) =
       if (!material) {
         return res.status(404).json({ message: 'Материал не найден' });
       }
-
-    // Запись в историю
-    const history = new History({
-    userId: req.user.userId,
-    action: 'Обновление материала',
-    details: { materialId: material._id, oldQuantity: material.quantity, newQuantity: quantity },
-    });
-
-    await history.save();
-    // Обновляем количество
-    material.quantity = quantity;
-    await material.save();
   
-    // Проверяем критический порог
-    if (material.quantity <= material.threshold) {
-      console.log(`Внимание! Материал "${material.name}" достиг критического порога.`);
-    }
+      // Проверяем, достигнут ли критический порог
+      if (quantity <= material.threshold) {
+        // Проверяем, существует ли уже уведомление для этого материала
+        const existingNotification = await Notification.findOne({ materialId: material._id });
   
-        res.json(material);
+        if (!existingNotification) {
+          // Создаём новое уведомление
+          const notification = new Notification({
+            materialId: material._id,
+            materialName: material.name,
+            quantity,
+          });
+          await notification.save();
+          console.log(`Уведомление создано: Материал "${material.name}" достиг критического порога. Текущее количество: ${quantity}`);
+        }
+      } else {
+        // Если количество превысило порог, удаляем уведомление
+        await Notification.deleteOne({ materialId: material._id });
+        console.log(`Уведомление удалено: Материал "${material.name}" превысил критический порог. Текущее количество: ${quantity}`);
+      }
+  
+      // Обновляем количество
+      material.quantity = quantity;
+      await material.save();
+  
+      res.json(material);
     } catch (error) {
       res.status(500).json({ message: 'Ошибка при обновлении материала' });
     }

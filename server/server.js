@@ -27,6 +27,9 @@ app.use('/api/materials', materialRoutes)
 const historyRoutes = require('./routes/historyRoutes');
 app.use('/api/history', historyRoutes);
 
+const notificationRoutes = require('./routes/notificationRoutes');
+app.use('/api/notifications', notificationRoutes);
+
 
 // Тестовый роут
 app.get('/', (req, res) => {
