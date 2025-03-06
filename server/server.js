@@ -13,13 +13,16 @@ app.use(express.json());
 // Подключение к MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected'))
-  .catch(err => console.log(err));
+  .catch(err => console.log(err))
 
-const authRoutes = require('./routes/auth');
-app.use('/api/auth', authRoutes);
+const authRoutes = require('./routes/auth')
+app.use('/api/auth', authRoutes)
 
-const regRoutes = require('./routes/auth');
+const regRoutes = require('./routes/auth')
 app.use('/api/register', regRoutes)
+
+const materialRoutes = require('./routes/materialRoutes')
+app.use('/api/materials', materialRoutes)
 
 
 // Тестовый роут
