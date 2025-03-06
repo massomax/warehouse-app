@@ -27,20 +27,56 @@ function App() {
   };
 
   return (
-    <Router>
-      <ToastContainer />
-      <nav>
-        <Link to="/dashboard">Склад</Link>
-        <Link to="/history">История</Link>
-        <span>Роль: {userRole === 'manager' ? 'Менеджер' : 'Сотрудник'}</span> {/* Отображаем роль */}
-        <button onClick={handleLogout}>Выйти</button>
-      </nav>
+    // <Router>
+    //   <ToastContainer
+    //       position="top-right"
+    //       autoClose={1000}
+    //       hideProgressBar={false}
+    //       newestOnTop
+    //     />
+    //   <nav>
+    //     <Link to="/dashboard">Склад</Link>
+    //     <Link to="/history">История</Link>
+    //     <span>Роль: {userRole === 'manager' ? 'Менеджер' : 'Сотрудник'}</span> {/* Отображаем роль */}
+    //     <button onClick={handleLogout}>Выйти</button>
+    //   </nav>
       
-      <Routes>
-        <Route path="/" element={<LoginForm />} />
-        <Route path="/dashboard" element={<MaterialList />} />
-        <Route path="/history" element={<HistoryList />} />
-      </Routes>
+    //   <Routes>
+    //     <Route path="/" element={<LoginForm />} />
+    //     <Route path="/dashboard" element={<MaterialList />} />
+    //     <Route path="/history" element={<HistoryList />} />
+    //   </Routes>
+    // </Router>
+    <Router>
+      <div className="app-container">
+        {/* Уведомления */}
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop
+        />
+
+        {/* Навигационная панель */}
+        <nav className="main-nav">
+          <div className="nav-links">
+            <Link to="/dashboard" className="nav-link">Склад</Link>
+            <Link to="/history" className="nav-link">История</Link>
+            <span>Роль: {userRole === 'manager' ? 'Менеджер' : 'Сотрудник'}</span> {/* Отображаем роль */}
+          </div>
+          <button onClick={handleLogout} className="logout-btn">
+            Выйти
+          </button>
+        </nav>
+
+        {/* Маршруты */}
+        <Routes>
+          <Route path="/" element={<LoginForm />} />
+          <Route path="/login" element={<LoginForm />} />
+          <Route path="/dashboard" element={<MaterialList />} />
+          <Route path="/history" element={<HistoryList />} />
+        </Routes>
+      </div>
     </Router>
   );
 }

@@ -22,17 +22,14 @@ router.put('/:id', authMiddleware, roleMiddleware('manager'), async (req, res) =
         { status },
         { new: true }
       );
-  
       if (!notification) {
         return res.status(404).json({ message: 'Уведомление не найдено' });
       }
-  
       res.json(notification);
     } catch (error) {
       res.status(500).json({ message: 'Ошибка при обновлении статуса уведомления' });
     }
 });
-
 router.delete('/:id', authMiddleware, roleMiddleware('manager'), async (req, res) => {
     const { id } = req.params;
   
@@ -47,6 +44,5 @@ router.delete('/:id', authMiddleware, roleMiddleware('manager'), async (req, res
     } catch (error) {
       res.status(500).json({ message: 'Ошибка при удалении уведомления' });
     }
-});
-  
+}); 
 module.exports = router;

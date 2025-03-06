@@ -59,9 +59,9 @@ router.post('/login', [
   
     // Генерация JWT
     const token = jwt.sign(
-      { userId: user.id, role: user.role },
+      { userId: user._id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: '1h' }
+      { expiresIn: '30d' }
     );
   
     res.json({ token });
