@@ -1,31 +1,33 @@
 import React, { useState } from 'react';
-import api from '../api'
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import '../styles.css';
 
-const LoginForm = () => {
+const RegisterForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('employee'); // По умолчанию выбрана роль "Сотрудник"
+  const [role, setRole] = useState('employee');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.post('/auth/login', { email, password, role });
-      localStorage.setItem('token', response.data.token);
-      toast.success('Вход выполнен успешно!');
-      navigate('/dashboard');
+      await axios.post('http://localhost:5000/api/auth/register', {
+        email,
+        password,
+        role,
+      });
+      toast.success('Регистрация прошла успешно!'); // Уведомление об успешной регистрации
+      navigate('/');
     } catch (error) {
-      console.error('Ошибка авторизации:', error);
-      // Ошибка уже обработана в интерцепторе
+      console.error('Ошибка регистрации:', error);
+      toast.error('Ошибка при регистрации'); // Уведомление об ошибке
     }
   };
 
   return (
-    <div className="login-form">
-      <h2>Вход в систему</h2>
+    <div className="register-form">
+      <h2>Регистрация</h2>
       <form onSubmit={handleSubmit}>
         <div>
           <label>Email:</label>
@@ -52,10 +54,10 @@ const LoginForm = () => {
             <option value="manager">Менеджер</option>
           </select>
         </div>
-        <button type="submit">Войти</button>
+        <button type="submit">Зарегистрироваться</button>
       </form>
     </div>
   );
 };
 
-export default LoginForm;
+export default RegisterForm;

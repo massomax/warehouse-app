@@ -1,67 +1,112 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import api from '../api';
 import AddMaterialForm from './material/AddMaterialForm';
 import EditMaterialForm from './material/EditMaterialForm';
 import DeleteMaterialButton from './material/DeleteMaterialButton';
+import MaterialActions from './material/MaterialActions';
+import { toast } from 'react-toastify';
 import '../styles.css';
 
 const MaterialList = () => {
   const [materials, setMaterials] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState(null);
+  const [userRole, setUserRole] = useState('employee');
 
-  // Загрузка материалов
+  // Загрузка материалов и роли пользователя
   useEffect(() => {
-    const fetchMaterials = async () => {
+    const fetchMaterialsAndRole = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/materials', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-        });
-        setMaterials(response.data);
+        const materialsResponse = await api.get('/materials');
+        setMaterials(materialsResponse.data);
+
+        const token = localStorage.getItem('token');
+        if (token) {
+          const decodedToken = JSON.parse(atob(token.split('.')[1]));
+          setUserRole(decodedToken.role);
+        }
       } catch (error) {
-        console.error('Ошибка при загрузке материалов:', error);
+        console.error('Ошибка при загрузке данных:', error);
       }
     };
-    fetchMaterials();
+    fetchMaterialsAndRole();
   }, []);
 
-  // Обработчики для добавления, удаления и редактирования
-  const handleMaterialAdded = (newMaterial) => {
-    setMaterials([...materials, newMaterial]);
-    setShowAddForm(false);
+  // Функция для списания материала
+  const handleSubtract = async (materialId, quantity) => {
+    try {
+      const material = materials.find(m => m._id === materialId);
+      const newQuantity = material.quantity - quantity;
+
+      if (newQuantity < 0) {
+        toast.error('Недостаточно материала на складе');
+        return;
+      }
+
+      await api.put(`/materials/${materialId}`, { quantity: newQuantity });
+      setMaterials(materials.map(m => 
+        m._id === materialId ? { ...m, quantity: newQuantity } : m
+      ));
+      toast.success('Материал успешно списан!');
+    } catch (error) {
+      console.error('Ошибка при списании материала:', error);
+      toast.error('Ошибка при списании материала');
+    }
   };
 
-  const handleMaterialDeleted = (materialId) => {
-    setMaterials(materials.filter((material) => material._id !== materialId));
-  };
+  // Функция для добавления материала
+  const handleAdd = async (materialId, quantity) => {
+    try {
+      const material = materials.find(m => m._id === materialId);
+      const newQuantity = material.quantity + quantity;
 
-  const handleMaterialUpdated = (updatedMaterial) => {
-    setMaterials(
-      materials.map((material) =>
-        material._id === updatedMaterial._id ? updatedMaterial : material
-      )
-    );
-    setEditingMaterial(null);
+      await api.put(`/materials/${materialId}`, { quantity: newQuantity });
+      setMaterials(materials.map(m => 
+        m._id === materialId ? { ...m, quantity: newQuantity } : m
+      ));
+      toast.success('Материал успешно добавлен!');
+    } catch (error) {
+      console.error('Ошибка при добавлении материала:', error);
+      toast.error('Ошибка при добавлении материала');
+    }
   };
 
   return (
     <div className="material-list">
       <h2>Материалы на складе</h2>
-      <button onClick={() => setShowAddForm(true)}>Добавить материал</button>
+      
+      {userRole === 'manager' && (
+        <button 
+          className="add-material-btn"
+          onClick={() => setShowAddForm(true)}
+        >
+          Добавить материал
+        </button>
+      )}
 
       {showAddForm && (
-        <AddMaterialForm onMaterialAdded={handleMaterialAdded} />
+        <AddMaterialForm 
+          onMaterialAdded={(newMaterial) => {
+            setMaterials([...materials, newMaterial]);
+            setShowAddForm(false);
+          }}
+        />
       )}
 
       {editingMaterial && (
         <EditMaterialForm
           material={editingMaterial}
-          onMaterialUpdated={handleMaterialUpdated}
+          onMaterialUpdated={(updatedMaterial) => {
+            setMaterials(materials.map(material =>
+              material._id === updatedMaterial._id ? updatedMaterial : material
+            ));
+            setEditingMaterial(null);
+          }}
           onCancel={() => setEditingMaterial(null)}
         />
       )}
 
-      <table>
+      <table className="materials-table">
         <thead>
           <tr>
             <th>Название</th>
@@ -71,17 +116,34 @@ const MaterialList = () => {
           </tr>
         </thead>
         <tbody>
-          {materials.map((material) => (
+          {materials.map(material => (
             <tr key={material._id}>
               <td>{material.name}</td>
               <td>{material.quantity}</td>
               <td>{material.threshold}</td>
               <td>
-                <button onClick={() => setEditingMaterial(material)}>Редактировать</button>
-                <DeleteMaterialButton
-                  materialId={material._id}
-                  onMaterialDeleted={handleMaterialDeleted}
-                />
+                {userRole === 'manager' ? (
+                  <>
+                    <button 
+                      className="edit-btn"
+                      onClick={() => setEditingMaterial(material)}
+                    >
+                      Редактировать
+                    </button>
+                    <DeleteMaterialButton
+                      materialId={material._id}
+                      onMaterialDeleted={(materialId) => {
+                        setMaterials(materials.filter(m => m._id !== materialId));
+                      }}
+                    />
+                  </>
+                ) : (
+                  <MaterialActions
+                    materialId={material._id}
+                    onSubtract={handleSubtract}
+                    onAdd={handleAdd}
+                  />
+                )}
               </td>
             </tr>
           ))}

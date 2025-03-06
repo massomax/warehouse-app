@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const AddMaterialForm = ({ onMaterialAdded }) => {
   const [newMaterial, setNewMaterial] = useState({
@@ -25,10 +26,10 @@ const AddMaterialForm = ({ onMaterialAdded }) => {
       );
       onMaterialAdded(response.data); // Передаем новый материал в родительский компонент
       setNewMaterial({ name: '', quantity: 0, threshold: 10 }); // Сбрасываем форму
-      alert('Материал успешно добавлен!');
+      toast.success('Материал успешно добавлен!');
     } catch (error) {
       console.error('Ошибка при добавлении материала:', error);
-      alert('Ошибка при добавлении материала');
+      toast.error('Ошибка при добавлении материала');
     }
   };
 

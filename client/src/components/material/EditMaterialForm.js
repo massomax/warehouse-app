@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const EditMaterialForm = ({ material, onMaterialUpdated, onCancel }) => {
   const [editedMaterial, setEditedMaterial] = useState(material);
@@ -20,10 +21,10 @@ const EditMaterialForm = ({ material, onMaterialUpdated, onCancel }) => {
         }
       );
       onMaterialUpdated(response.data); // Передаем обновленный материал в родительский компонент
-      alert('Материал успешно обновлён!');
+      toast.success('Материал успешно обновлён!');
     } catch (error) {
       console.error('Ошибка при обновлении материала:', error);
-      alert('Ошибка при обновлении материала');
+      toast.error('Ошибка при обновлении материала');
     }
   };
 

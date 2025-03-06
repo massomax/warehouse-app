@@ -132,3 +132,92 @@ body {
   form button {
     margin-right: 0.5rem;
   }
+  /* Стили для уведомлений */
+.Toastify__toast--success {
+  background-color: #00ced1; /* Бирюзовый для успешных уведомлений */
+}
+
+.Toastify__toast--error {
+  background-color: #ff6b6b; /* Красный для ошибок */
+}
+
+.Toastify__toast {
+  border-radius: 8px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Стили для навигации */
+nav {
+  background-color: #00ced1;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+nav span {
+  color: white;
+  font-weight: bold;
+}
+
+nav button {
+  background-color: #ff6b6b;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.material-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.quantity-control {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.quantity-control input[type="number"] {
+  width: 60px;
+  text-align: center;
+  padding: 5px;
+  border: 1px solid #00ced1;
+  border-radius: 4px;
+}
+
+.quantity-control input[type="range"] {
+  flex-grow: 1;
+}
+
+.quantity-control button {
+  background-color: #00ced1;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.action-buttons button {
+  background-color: #20b2aa;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.action-buttons button:hover {
+  background-color: #008b8b;
+}
