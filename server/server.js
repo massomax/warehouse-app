@@ -30,6 +30,9 @@ app.use('/api/history', historyRoutes);
 const notificationRoutes = require('./routes/notificationRoutes');
 app.use('/api/notifications', notificationRoutes);
 
+const reportRoutes = require('./routes/reportRoutes');
+app.use('/api/reports', reportRoutes);
+
 
 // Тестовый роут
 app.get('/', (req, res) => {
