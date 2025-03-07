@@ -3,7 +3,8 @@ import api from '../api';
 import AddMaterialForm from './material/AddMaterialForm';
 import EditMaterialForm from './material/EditMaterialForm';
 import DeleteMaterialButton from './material/DeleteMaterialButton';
-import MaterialActions from './material/MaterialActions';
+import MaterialActions from './material/MaterialActions'; 
+import WarehouseSelector from './WarehouseSelector'
 import { toast } from 'react-toastify';
 import '../styles.css';
 
@@ -12,25 +13,47 @@ const MaterialList = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState(null);
   const [userRole, setUserRole] = useState('employee');
+  const [selectedWarehouse, setSelectedWarehouse] = useState(null);
 
   // Загрузка материалов и роли пользователя
   useEffect(() => {
-    const fetchMaterialsAndRole = async () => {
-      try {
-        const materialsResponse = await api.get('/materials');
-        setMaterials(materialsResponse.data);
 
-        const token = localStorage.getItem('token');
-        if (token) {
-          const decodedToken = JSON.parse(atob(token.split('.')[1]));
-          setUserRole(decodedToken.role);
-        }
-      } catch (error) {
-        console.error('Ошибка при загрузке данных:', error);
+      
+  const fetchMaterials = async () => {
+    if (!selectedWarehouse) return;
+    
+    try {
+      const response = await api.get(`/materials?warehouse=${selectedWarehouse}`);
+      setMaterials(response.data);
+    } catch (error) {
+      console.error('Ошибка загрузки материалов:', error);
+    }
+  };
+  fetchMaterials();
+}, [selectedWarehouse]);
+
+
+
+useEffect(() => {
+  const fetchMaterialsAndRole = async () => {
+    try {
+      const materialsResponse = await api.get('/materials');
+      setMaterials(materialsResponse.data);
+
+      const token = localStorage.getItem('token');
+      if (token) {
+        const decodedToken = JSON.parse(atob(token.split('.')[1]));
+        setUserRole(decodedToken.role);
       }
-    };
-    fetchMaterialsAndRole();
-  }, []);
+    } catch (error) {
+      console.error('Ошибка при загрузке данных:', error);
+    }
+  };
+
+  fetchMaterialsAndRole();
+}, []);
+
+
 
   // Функция для списания материала
   const handleSubtract = async (materialId, quantity) => {
@@ -73,6 +96,7 @@ const MaterialList = () => {
 
   return (
     <div className="material-list">
+      <WarehouseSelector onSelect={setSelectedWarehouse} />
       <h2>Материалы на складе</h2>
       
       {userRole === 'manager' && (

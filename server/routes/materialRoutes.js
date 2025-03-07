@@ -158,4 +158,15 @@ router.delete('/:id', authMiddleware, roleMiddleware('manager'), async (req, res
   }
 });
 
+router.get('/', authMiddleware, async (req, res) => {
+  try {
+    const materials = await Material.find({ 
+      warehouseId: req.query.warehouse // Фильтр по складу
+    });
+    res.json(materials);
+  } catch (error) {
+    res.status(500).json({ message: 'Ошибка при получении материалов' });
+  }
+});
+
 module.exports = router;
