@@ -33,6 +33,11 @@ app.use('/api/notifications', notificationRoutes);
 const reportRoutes = require('./routes/reportRoutes');
 app.use('/api/reports', reportRoutes);
 
+const warehouseRoutes = require('./routes/warehouseRoutes');
+const warehouseAccessRoutes = require('./routes/warehouseAccessRoutes');
+app.use('/api/warehouses', warehouseRoutes);
+app.use('/api/warehouse-access', warehouseAccessRoutes);
+
 
 // Тестовый роут
 app.get('/', (req, res) => {
